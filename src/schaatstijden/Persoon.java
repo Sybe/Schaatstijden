@@ -8,7 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class Persoon {
+public class Persoon implements CharSequence{
 
 	private int geslacht;
 	private String voornaam;
@@ -29,10 +29,20 @@ public class Persoon {
 		this.begindatum = begindatum;
 		this.einddatum = einddatum;
 		this.id = -1;
+		this.tijd = "00.00,00";
 	}
 	
 	public String getTijd(){
 		return tijd;
+	}
+	
+	public void setTijd(String tijd){
+		int l = tijd.length();
+		char[] tijdChars = this.tijd.toCharArray();
+		for(int i = l; i > 0; i--){
+			tijdChars[Constants.TIJD_LENGTH - 1 - l + i] = tijd.charAt(i - 1);
+		}
+		this.tijd = new String(tijdChars);
 	}
 	
 	public void importTijd(){
@@ -53,7 +63,7 @@ public class Persoon {
 	            if(inputLine.contains("<time>")){
 	            	int beginIndex = inputLine.indexOf("<time>") + "<time>".length();
 	            	int endIndex = inputLine.indexOf("</time>");
-	            	tijd = inputLine.substring(beginIndex, endIndex);
+	            	setTijd(inputLine.substring(beginIndex, endIndex));
 	            } else {
 	            	tijd = Constants.GEENTIJD;
 	            }
@@ -118,5 +128,28 @@ public class Persoon {
 		p.importID();
 		p.importTijd();
 		System.out.println(p.getTijd());
+	}
+	
+	public String toString(){
+		String result = voornaam + ";" + achternaam + ";" + tijd;
+		return result;
+	}
+
+	@Override
+	public char charAt(int index) {
+		// TODO Auto-generated method stub
+		return this.toString().charAt(index);
+	}
+
+	@Override
+	public int length() {
+		// TODO Auto-generated method stub
+		return Constants.TIJD_LENGTH;
+	}
+
+	@Override
+	public CharSequence subSequence(int start, int end) {
+		// TODO Auto-generated method stub
+		return this.toString().subSequence(start, end);
 	}
 }

@@ -7,4 +7,5 @@ public class Constants {
 	
 	public static final String GEENTIJD = "NT";
 
+	public static final int TIJD_LENGTH = 8;
 }
