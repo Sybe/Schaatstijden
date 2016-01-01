@@ -3,7 +3,6 @@ package schaatstijden;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -29,10 +28,7 @@ public class Persoon {
 		this.geboortedatum = geboortedatum;
 		this.begindatum = begindatum;
 		this.einddatum = einddatum;
-	}
-	
-	public void setId(int id){
-		this.id = id;
+		this.id = -1;
 	}
 	
 	public String getTijd(){
@@ -40,52 +36,73 @@ public class Persoon {
 	}
 	
 	public void importTijd(){
-		try {
-			URL url  = new URL("http://speedskatingresults.com/api/xml/seed_times?skater=" + id + "&start=" + begindatum + "&end=" + einddatum + "&distance=" + afstand);
-			URLConnection conn;
-			conn = url.openConnection();
-
-
-            BufferedReader br = new BufferedReader(
-                               new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            br.readLine();
-            inputLine = br.readLine();
-            int beginIndex = inputLine.indexOf("<time>") + "<time>".length();
-            int endIndex = inputLine.lastIndexOf("</time>");
-            tijd = inputLine.substring(beginIndex, endIndex);
-            
-            
-
-            br.close();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(id == -1){
+			tijd = Constants.GEENTIJD;
+		} else {
+			try {
+				URL url  = new URL("http://speedskatingresults.com/api/xml/seed_times?skater=" + id + "&start=" + begindatum + "&end=" + einddatum + "&distance=" + afstand);
+				URLConnection conn;
+				conn = url.openConnection();
+	
+	
+	            BufferedReader br = new BufferedReader(
+	                               new InputStreamReader(conn.getInputStream()));
+	            String inputLine;
+	            br.readLine();
+	            inputLine = br.readLine();
+	            if(inputLine.contains("<time>")){
+	            	int beginIndex = inputLine.indexOf("<time>") + "<time>".length();
+	            	int endIndex = inputLine.indexOf("</time>");
+	            	tijd = inputLine.substring(beginIndex, endIndex);
+	            } else {
+	            	tijd = Constants.GEENTIJD;
+	            }
+	            
+	            br.close();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
 	
 	public void importID(){
 		try {
-			URL url  = new URL("http://speedskatingresults.com/index.php?p=204");
-			HttpURLConnection conn;
-			conn = (HttpURLConnection) url.openConnection();
+			String urlText = ("http://speedskatingresults.com/api/xml/skater_search.php?familyname=" + achternaam + "&givenname=" + voornaam + "&gender=" + geslacht);
+			urlText = urlText.replace(" ", "%20");
+			URL url  = new URL(urlText);
+			URLConnection conn;
+			conn = url.openConnection();
 
-			
             BufferedReader br = new BufferedReader(
                                new InputStreamReader(conn.getInputStream()));
             String inputLine;
             br.readLine();
             inputLine = br.readLine();
-            int beginIndex = inputLine.indexOf("<time>") + "<time>".length();
-            int endIndex = inputLine.lastIndexOf("</time>");
-            tijd = inputLine.substring(beginIndex, endIndex);
-            
-            
-
+            while (inputLine.contains("<skater>")){
+            	if(inputLine.contains("<dob>")){//Persoon heeft een geboortedatum
+            		int beginIndex = inputLine.indexOf("<dob>") + "<dob>".length();
+            		int endIndex = inputLine.indexOf("</dob>");
+            		String dob = inputLine.substring(beginIndex, endIndex);
+            		if(geboortedatum.equals(dob)){//Geboortedatum is correct
+            			beginIndex = inputLine.indexOf("<id>") + "<id>".length();
+            			endIndex = inputLine.indexOf("</id>");
+            			id = Integer.parseInt(inputLine.substring(beginIndex, endIndex));
+            			break;
+            		} else {
+            			int cutIndex = inputLine.indexOf("</skater>");
+            			inputLine = inputLine.substring(cutIndex);
+            		}
+            	} else { //Neem aan dat dit de goede persoon is
+            		int beginIndex = inputLine.indexOf("<id>") + "<id>".length();
+        			int endIndex = inputLine.indexOf("</id>");
+        			id = Integer.parseInt(inputLine.substring(beginIndex, endIndex));
+        			break;
+            	}
+            }            
             br.close();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -94,15 +111,12 @@ public class Persoon {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		"GET /api/xml/skater_search.php?familyname=van%20Hijum&givenname=Sybe&gender=1 HTTP/1.1\r\n"
 	}
 	
 	public static void main(String args[]){
-		Persoon p = new Persoon(Constants.MAN, "Sybe", "van Hijum", "1992-04-29", 3000, "2015-07-01", "2016-06-30");
-		p.setId(42292);
+		Persoon p = new Persoon(Constants.VROUW, "Jip", "Spel", "1993-12-31", 500, "2015-07-01", "2016-06-30");
+		p.importID();
 		p.importTijd();
 		System.out.println(p.getTijd());
 	}
-	
-	
 }
