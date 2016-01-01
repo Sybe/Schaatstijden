@@ -3,11 +3,11 @@ package schaatstijden;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-//import sun.net.www.URLConnection;
 
 public class Persoon {
 
@@ -66,6 +66,35 @@ public class Persoon {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void importID(){
+		try {
+			URL url  = new URL("http://speedskatingresults.com/index.php?p=204");
+			HttpURLConnection conn;
+			conn = (HttpURLConnection) url.openConnection();
+
+			
+            BufferedReader br = new BufferedReader(
+                               new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            br.readLine();
+            inputLine = br.readLine();
+            int beginIndex = inputLine.indexOf("<time>") + "<time>".length();
+            int endIndex = inputLine.lastIndexOf("</time>");
+            tijd = inputLine.substring(beginIndex, endIndex);
+            
+            
+
+            br.close();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		"GET /api/xml/skater_search.php?familyname=van%20Hijum&givenname=Sybe&gender=1 HTTP/1.1\r\n"
 	}
 	
 	public static void main(String args[]){
