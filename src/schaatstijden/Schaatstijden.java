@@ -17,9 +17,15 @@ public class Schaatstijden {
 	private String einddatum;
 	private ArrayList<Persoon> personen;
 	private boolean tussenvoegsel;
+	private GUI gui;
 	
 	public Schaatstijden(){
 		personen = new ArrayList<Persoon>();
+	}
+	
+	public Schaatstijden(GUI gui){
+		personen = new ArrayList<Persoon>();
+		this.gui = gui;
 	}
 	
 	public void addPersoon(int geslacht, String voornaam, String achternaam, String geboortedatum){
@@ -45,6 +51,9 @@ public class Schaatstijden {
 	
 	public void importAll(){
 		for(int i = 0; i < personen.size(); i++){
+			if(gui != null){
+				gui.showMessage("Importeer persoon " + i);
+			}
 			Persoon p = personen.get(i);
 			p.importID();
 			p.importTijd();
@@ -72,11 +81,12 @@ public class Schaatstijden {
 		personen.sort(new PersoonComparator());
 	}
 	
-	public void importDeelnemers(String fileName){
+	public void importDeelnemers(BufferedReader br){
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(fileName));
 			String line;
+			System.out.println("begin lezen");
 			while((line = br.readLine()) != null){
+				System.out.println("Regel gelezen");
 				String[] values = line.split("\t");
 				int geslacht;
 				if(values[0].equalsIgnoreCase("Man")){
@@ -93,6 +103,9 @@ public class Schaatstijden {
 				} else {
 					addPersoon(geslacht, values[1], values[2], values[3]);
 				}
+				if(gui != null){
+					gui.showMessage("Persoon " + personen.size() + " toegevoegd");
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -100,21 +113,15 @@ public class Schaatstijden {
 		}
 	}
 	
-	public static void main(String args[]){
-		Schaatstijden s = new Schaatstijden();
-		s.setAfstand(1000);
-		s.setTussenvoegsel(true);
-		s.setBegindatum("2010-07-01");
-		s.setEinddatum("2016-02-01");
-		s.importDeelnemers("C:\\Users\\Sybe\\workspace\\Schaatstijden\\deelnemers.txt");
-//		s.addPersoon(Constants.MAN, "Sybe", "van Hijum", "1992-04-29");
-//		s.addPersoon(Constants.VROUW, "Jip", "Spel", "1993-12-31");
-//		s.addPersoon(Constants.VROUW, "Esther", "Nauta", "1992-08-06");
-//		s.addPersoon(Constants.MAN, "Jann", "van Benthem", "1957-04-26");
-//		s.addPersoon(Constants.MAN, "Marijn", "Zwier", "1988-01-20");
-//		s.addPersoon(Constants.VROUW, "Claudia", "Henckel", "1989-04-24");
-		s.importAll();
-		s.sortPersonen();
-		s.printToCSV("output.csv");
-	}
+//	public static void main(String args[]){
+//		Schaatstijden s = new Schaatstijden();
+//		s.setAfstand(1000);
+//		s.setTussenvoegsel(true);
+//		s.setBegindatum("2010-07-01");
+//		s.setEinddatum("2016-02-01");
+//		s.importDeelnemers("C:\\Users\\Sybe\\workspace\\Schaatstijden\\deelnemers.txt");
+//		s.importAll();
+//		s.sortPersonen();
+//		s.printToCSV("output.csv");
+//	}
 }
