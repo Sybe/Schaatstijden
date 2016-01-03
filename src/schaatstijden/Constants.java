@@ -9,4 +9,7 @@ public class Constants {
 
 	public static final int TIJD_LENGTH = 8;
 	public static final String DATUM_FORMAT = "\\d{4}-\\d{2}-\\d{2}";
+	
+	public static String MAN_TEKEN;
+	public static String VROUW_TEKEN;
 }

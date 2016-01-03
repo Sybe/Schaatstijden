@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class Schaatstijden {
+public class Schaatstijden extends Thread{
 
 	private int afstand;
 	private String begindatum;
@@ -18,6 +18,8 @@ public class Schaatstijden {
 	private ArrayList<Persoon> personen;
 	private boolean tussenvoegsel;
 	private GUI gui;
+	private BufferedReader br;
+	private boolean sorteer;
 	
 	public Schaatstijden(){
 		personen = new ArrayList<Persoon>();
@@ -26,6 +28,14 @@ public class Schaatstijden {
 	public Schaatstijden(GUI gui){
 		personen = new ArrayList<Persoon>();
 		this.gui = gui;
+	}
+	
+	public void setBr(BufferedReader br){
+		this.br = br;
+	}
+	
+	public void setSorteer(boolean sorteer){
+		this.sorteer = sorteer;
 	}
 	
 	public void addPersoon(int geslacht, String voornaam, String achternaam, String geboortedatum){
@@ -67,6 +77,14 @@ public class Schaatstijden {
 		}
 	}
 	
+	public String getResultsString(){
+		String result = new String();
+		for(int i = 0; i < personen.size(); i++){
+			result += personen.get(i) + "\n";
+		}
+		return result;
+	}
+	
 	public void printToCSV(String fileName){
 		Path file = Paths.get(fileName);
 		try {
@@ -81,30 +99,30 @@ public class Schaatstijden {
 		personen.sort(new PersoonComparator());
 	}
 	
-	public void importDeelnemers(BufferedReader br){
+	public void importDeelnemers(){
 		try {
 			String line;
-			System.out.println("begin lezen");
 			while((line = br.readLine()) != null){
-				System.out.println("Regel gelezen");
-				String[] values = line.split("\t");
-				int geslacht;
-				if(values[0].equalsIgnoreCase("Man")){
-					geslacht = Constants.MAN;
-				} else {
-					geslacht = Constants.VROUW;
-				}
-				if(tussenvoegsel){
-					if(!values[2].equals("")){
-						addPersoon(geslacht, values[1], values[2] + " " + values[3], values[4]);
+				if(!line.equals("")){
+					String[] values = line.split("\t");
+					int geslacht;
+					if(values[0].equalsIgnoreCase(Constants.MAN_TEKEN)){
+						geslacht = Constants.MAN;
 					} else {
-						addPersoon(geslacht, values[1], values[3], values[4]);
+						geslacht = Constants.VROUW;
 					}
-				} else {
-					addPersoon(geslacht, values[1], values[2], values[3]);
-				}
-				if(gui != null){
-					gui.showMessage("Persoon " + personen.size() + " toegevoegd");
+					if(tussenvoegsel){
+						if(!values[2].equals("")){
+							addPersoon(geslacht, values[1], values[2] + " " + values[3], values[4]);
+						} else {
+							addPersoon(geslacht, values[1], values[3], values[4]);
+						}
+					} else {
+						addPersoon(geslacht, values[1], values[2], values[3]);
+					}
+					if(gui != null){
+						gui.showMessage("Persoon " + personen.size() + " toegevoegd");
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -113,15 +131,15 @@ public class Schaatstijden {
 		}
 	}
 	
-//	public static void main(String args[]){
-//		Schaatstijden s = new Schaatstijden();
-//		s.setAfstand(1000);
-//		s.setTussenvoegsel(true);
-//		s.setBegindatum("2010-07-01");
-//		s.setEinddatum("2016-02-01");
-//		s.importDeelnemers("C:\\Users\\Sybe\\workspace\\Schaatstijden\\deelnemers.txt");
-//		s.importAll();
-//		s.sortPersonen();
-//		s.printToCSV("output.csv");
-//	}
+	public void run(){
+		importDeelnemers();
+		importAll();
+		if(sorteer){
+			sortPersonen();
+		}
+		String results = getResultsString();
+		if(gui != null){	
+			gui.setResults(results);
+		}
+	}
 }

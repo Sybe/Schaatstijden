@@ -131,7 +131,7 @@ public class Persoon implements CharSequence{
 	}
 	
 	public String toString(){
-		String result = voornaam + ";" + achternaam + ";" + tijd;
+		String result = voornaam + "\t" + achternaam + "\t" + tijd;
 		return result;
 	}
 

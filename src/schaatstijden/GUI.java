@@ -38,6 +38,9 @@ public class GUI {
 	private JLabel lblError;
 	private TextArea textArea;
 	private Schaatstijden schaatstijden;
+	private JTextField txtMan;
+	private JTextField txtVrouw;
+	private JCheckBox chckbxSorteerOpTijd;
 
 	/**
 	 * Launch the application.
@@ -68,16 +71,16 @@ public class GUI {
 	private void initialize() {
 		schaatstijden = new Schaatstijden(this);
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 600);
+		frame.setBounds(100, 100, 526, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		textArea = new TextArea();
-		textArea.setBounds(27, 182, 380, 369);
+		textArea.setBounds(33, 182, 443, 369);
 		frame.getContentPane().add(textArea);
 		
 		afstand = new Choice();
-		afstand.setBounds(163, 10, 156, 20);
+		afstand.setBounds(139, 10, 156, 20);
 		afstand.addItem("500 meter");
 		afstand.addItem("1000 meter");
 		afstand.addItem("1500 meter");
@@ -88,13 +91,13 @@ public class GUI {
 		
 		begindatum = new JTextField();
 		begindatum.setText("jjjj-mm-dd");
-		begindatum.setBounds(163, 42, 156, 20);
+		begindatum.setBounds(139, 42, 156, 20);
 		frame.getContentPane().add(begindatum);
 		begindatum.setColumns(10);
 		
 		einddatum = new JTextField();
 		einddatum.setText("jjjj-mm-dd");
-		einddatum.setBounds(163, 73, 156, 20);
+		einddatum.setBounds(139, 73, 156, 20);
 		frame.getContentPane().add(einddatum);
 		einddatum.setColumns(10);
 		
@@ -105,7 +108,7 @@ public class GUI {
 				importeerTijden();
 			}
 		});
-		btnImporteerTijden.setBounds(163, 128, 156, 23);
+		btnImporteerTijden.setBounds(139, 128, 156, 23);
 		frame.getContentPane().add(btnImporteerTijden);
 		
 		JLabel lblAfstand = new JLabel("Afstand");
@@ -126,8 +129,32 @@ public class GUI {
 		frame.getContentPane().add(lblError);
 		
 		chckbxTussenvoegsel = new JCheckBox("Tussenvoegsel");
-		chckbxTussenvoegsel.setBounds(163, 100, 156, 23);
+		chckbxTussenvoegsel.setBounds(139, 98, 156, 23);
 		frame.getContentPane().add(chckbxTussenvoegsel);
+		
+		JLabel lblMan = new JLabel("Man");
+		lblMan.setBounds(328, 16, 46, 14);
+		frame.getContentPane().add(lblMan);
+		
+		JLabel lblVrouw = new JLabel("Vrouw");
+		lblVrouw.setBounds(328, 45, 46, 14);
+		frame.getContentPane().add(lblVrouw);
+		
+		chckbxSorteerOpTijd = new JCheckBox("Sorteer op tijd");
+		chckbxSorteerOpTijd.setBounds(328, 72, 142, 23);
+		frame.getContentPane().add(chckbxSorteerOpTijd);
+		
+		txtMan = new JTextField();
+		txtMan.setText("Man");
+		txtMan.setBounds(384, 13, 86, 20);
+		frame.getContentPane().add(txtMan);
+		txtMan.setColumns(10);
+		
+		txtVrouw = new JTextField();
+		txtVrouw.setText("Vrouw");
+		txtVrouw.setBounds(384, 42, 86, 20);
+		frame.getContentPane().add(txtVrouw);
+		txtVrouw.setColumns(10);
 	}
 	
 	public void setFieldsEnabled(boolean set){
@@ -137,6 +164,9 @@ public class GUI {
 		chckbxTussenvoegsel.setEnabled(set);
 		btnImporteerTijden.setEnabled(set);
 		textArea.setEnabled(set);
+		txtMan.setEnabled(set);
+		txtVrouw.setEnabled(set);
+		chckbxSorteerOpTijd.setEnabled(set);
 	}
 	
 	public void showMessage(String message){
@@ -145,6 +175,7 @@ public class GUI {
 	}
 
 	public void importeerTijden(){
+		frame.repaint();
 		lblError.setText("");
 		System.out.println("importing");
 		setFieldsEnabled(false);
@@ -154,18 +185,30 @@ public class GUI {
 		} else if(!Pattern.matches(Constants.DATUM_FORMAT, einddatum.getText())){
 			lblError.setText("Einddatum moet format jjjj-mm-dd hebben");
 			setFieldsEnabled(true);
+		} else if(txtMan.getText().equals("")){
+			lblError.setText("Geef aanduiding voor man");
+		} else if(txtVrouw.getText().equals("")){
+			lblError.setText("Geef aanduiding voor vrouw");
 		} else {
 			schaatstijden.setAfstand(Integer.parseInt(afstand.getSelectedItem().substring(0, afstand.getSelectedItem().length()-6)));
 			schaatstijden.setBegindatum(begindatum.getText());
 			schaatstijden.setEinddatum(einddatum.getText());
 			schaatstijden.setTussenvoegsel(chckbxTussenvoegsel.isSelected());
-			System.out.println("variabels gezet");
+			schaatstijden.setSorteer(chckbxSorteerOpTijd.isSelected());
+			Constants.MAN_TEKEN=txtMan.getText();
+			Constants.VROUW_TEKEN=txtVrouw.getText();
 			BufferedReader br = new BufferedReader(new StringReader(textArea.getText()));
-			System.out.println("reader gemaakt");
-			schaatstijden.importDeelnemers(br);
-			schaatstijden.importAll();
-			schaatstijden.printAll();
+			schaatstijden.setBr(br);
+			schaatstijden.start();
 		}
+	}
+	
+	public void setResults(String results){
+		textArea.setText(results);
+		System.out.println(results);
+		textArea.setEnabled(true);
+		textArea.setCaretPosition(0);
+		showMessage("");
 	}
 	
 	private static void addPopup(Component component, final JPopupMenu popup) {
