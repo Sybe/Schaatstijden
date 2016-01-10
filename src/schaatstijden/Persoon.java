@@ -8,7 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class Persoon implements CharSequence{
+public class Persoon implements CharSequence {
 
 	private int geslacht;
 	private String voornaam;
@@ -34,6 +34,22 @@ public class Persoon implements CharSequence{
 	
 	public String getTijd(){
 		return tijd;
+	}
+	
+	public int getID(){
+		return id;
+	}
+	
+	public String getBegindatum(){
+		return begindatum;
+	}
+	
+	public String getEinddatum(){
+		return einddatum;
+	}
+	
+	public int getAfstand(){
+		return afstand;
 	}
 	
 	public void setTijd(String tijd){
@@ -70,10 +86,8 @@ public class Persoon implements CharSequence{
 	            
 	            br.close();
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -93,6 +107,7 @@ public class Persoon implements CharSequence{
             br.readLine();
             inputLine = br.readLine();
             while (inputLine.contains("<skater>")){
+            	System.out.println(inputLine);
             	if(inputLine.contains("<dob>")){//Persoon heeft een geboortedatum
             		int beginIndex = inputLine.indexOf("<dob>") + "<dob>".length();
             		int endIndex = inputLine.indexOf("</dob>");
@@ -103,7 +118,7 @@ public class Persoon implements CharSequence{
             			id = Integer.parseInt(inputLine.substring(beginIndex, endIndex));
             			break;
             		} else {
-            			int cutIndex = inputLine.indexOf("</skater>");
+            			int cutIndex = inputLine.indexOf("</skater>") + "</skater>".length();
             			inputLine = inputLine.substring(cutIndex);
             		}
             	} else { //Neem aan dat dit de goede persoon is
@@ -137,19 +152,16 @@ public class Persoon implements CharSequence{
 
 	@Override
 	public char charAt(int index) {
-		// TODO Auto-generated method stub
 		return this.toString().charAt(index);
 	}
 
 	@Override
 	public int length() {
-		// TODO Auto-generated method stub
-		return Constants.TIJD_LENGTH;
+		return toString().length();
 	}
 
 	@Override
 	public CharSequence subSequence(int start, int end) {
-		// TODO Auto-generated method stub
 		return this.toString().subSequence(start, end);
 	}
 }

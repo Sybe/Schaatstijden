@@ -18,17 +18,18 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 
-public class GUI {
+public class GUIMulti extends GUI{
 
 	private JFrame frame;
 	private JTextField begindatum;
 	private JTextField einddatum;
 	private Choice afstand;
+	private Choice afstand2;
 	private JButton btnImporteerTijden;
 	private JCheckBox chckbxTussenvoegsel;
 	private JLabel lblError;
 	private TextArea textArea;
-	private Schaatstijden schaatstijden;
+	private SchaatstijdenMulti schaatstijden;
 	private JTextField txtMan;
 	private JTextField txtVrouw;
 	private JCheckBox chckbxSorteerOpTijd;
@@ -40,7 +41,7 @@ public class GUI {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GUI window = new GUI();
+					GUIMulti window = new GUIMulti();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -52,7 +53,7 @@ public class GUI {
 	/**
 	 * Create the application.
 	 */
-	public GUI() {
+	public GUIMulti() {
 		initialize();
 	}
 
@@ -60,14 +61,14 @@ public class GUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		schaatstijden = new Schaatstijden(this);
+		schaatstijden = new SchaatstijdenMulti(this);
 		frame = new JFrame();
-		frame.setBounds(100, 100, 526, 600);
+		frame.setBounds(100, 100, 599, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		textArea = new TextArea();
-		textArea.setBounds(33, 182, 443, 369);
+		textArea.setBounds(33, 182, 511, 369);
 		frame.getContentPane().add(textArea);
 		
 		afstand = new Choice();
@@ -124,32 +125,47 @@ public class GUI {
 		frame.getContentPane().add(chckbxTussenvoegsel);
 		
 		JLabel lblMan = new JLabel("Man");
-		lblMan.setBounds(328, 16, 46, 14);
+		lblMan.setBounds(328, 45, 46, 14);
 		frame.getContentPane().add(lblMan);
 		
 		JLabel lblVrouw = new JLabel("Vrouw");
-		lblVrouw.setBounds(328, 45, 46, 14);
+		lblVrouw.setBounds(328, 76, 46, 14);
 		frame.getContentPane().add(lblVrouw);
 		
 		chckbxSorteerOpTijd = new JCheckBox("Sorteer op tijd");
-		chckbxSorteerOpTijd.setBounds(328, 72, 142, 23);
+		chckbxSorteerOpTijd.setBounds(396, 98, 142, 23);
 		frame.getContentPane().add(chckbxSorteerOpTijd);
 		
 		txtMan = new JTextField();
 		txtMan.setText("Man");
-		txtMan.setBounds(384, 13, 86, 20);
+		txtMan.setBounds(396, 42, 148, 20);
 		frame.getContentPane().add(txtMan);
 		txtMan.setColumns(10);
 		
 		txtVrouw = new JTextField();
 		txtVrouw.setText("Vrouw");
-		txtVrouw.setBounds(384, 42, 86, 20);
+		txtVrouw.setBounds(396, 73, 148, 20);
 		frame.getContentPane().add(txtVrouw);
 		txtVrouw.setColumns(10);
+		
+		JLabel lblAfstand2 = new JLabel("Afstand 2");
+		lblAfstand2.setBounds(328, 16, 57, 14);
+		frame.getContentPane().add(lblAfstand2);
+		
+		afstand2 = new Choice();
+		afstand2.setBounds(396, 10, 148, 20);
+		afstand2.addItem("500 meter");
+		afstand2.addItem("1000 meter");
+		afstand2.addItem("1500 meter");
+		afstand2.addItem("3000 meter");
+		afstand2.addItem("5000 meter");
+		afstand2.addItem("10000 meter");	
+		frame.getContentPane().add(afstand2);
 	}
 	
 	public void setFieldsEnabled(boolean set){
 		afstand.setEnabled(set);
+		afstand2.setEnabled(set);
 		begindatum.setEnabled(set);
 		einddatum.setEnabled(set);
 		chckbxTussenvoegsel.setEnabled(set);
@@ -181,6 +197,7 @@ public class GUI {
 			lblError.setText("Geef aanduiding voor vrouw");
 		} else {
 			schaatstijden.setAfstand(Integer.parseInt(afstand.getSelectedItem().substring(0, afstand.getSelectedItem().length()-6)));
+			schaatstijden.setAfstand2(Integer.parseInt(afstand2.getSelectedItem().substring(0, afstand2.getSelectedItem().length()-6)));
 			schaatstijden.setBegindatum(begindatum.getText());
 			schaatstijden.setEinddatum(einddatum.getText());
 			schaatstijden.setTussenvoegsel(chckbxTussenvoegsel.isSelected());

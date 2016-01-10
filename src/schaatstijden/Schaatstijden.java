@@ -1,8 +1,6 @@
 package schaatstijden;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -20,6 +18,7 @@ public class Schaatstijden extends Thread{
 	private GUI gui;
 	private BufferedReader br;
 	private boolean sorteer;
+	
 	
 	public Schaatstijden(){
 		personen = new ArrayList<Persoon>();
@@ -57,6 +56,30 @@ public class Schaatstijden extends Thread{
 	
 	public void setTussenvoegsel(boolean tv){
 		this.tussenvoegsel = tv;
+	}
+	
+	public ArrayList<Persoon> getPersonen(){
+		return personen;
+	}
+	
+	public int getAfstand(){
+		return afstand;
+	}
+	
+	public String getBegindatum(){
+		return begindatum;
+	}
+	
+	public String getEinddatum(){
+		return einddatum;
+	}
+	
+	public GUI getGUI(){
+		return gui;
+	}
+	
+	public boolean getSorteer(){
+		return sorteer;
 	}
 	
 	public void importAll(){
