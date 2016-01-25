@@ -63,7 +63,7 @@ public class Persoon implements CharSequence {
 	
 	public void importTijd(){
 		if(id == -1){
-			tijd = Constants.GEENTIJD;
+			tijd = Constants.NIET_GEVONDEN;
 		} else {
 			try {
 				URL url  = new URL("http://speedskatingresults.com/api/xml/seed_times?skater=" + id + "&start=" + begindatum + "&end=" + einddatum + "&distance=" + afstand);

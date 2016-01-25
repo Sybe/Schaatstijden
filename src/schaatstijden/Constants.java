@@ -6,6 +6,7 @@ public class Constants {
 	public static final int VROUW = 0;
 	
 	public static final String GEENTIJD = "NT";
+	public static final String NIET_GEVONDEN = "NF";
 
 	public static final int TIJD_LENGTH = 8;
 	public static final int PUNTEN_LENGTH =7;

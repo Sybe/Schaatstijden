@@ -46,7 +46,7 @@ public class PersoonMulti extends Persoon {
 		String begindatum = getBegindatum();
 		String einddatum = getEinddatum();
 		if(id == -1){
-			tijd2 = Constants.GEENTIJD;
+			tijd2 = Constants.NIET_GEVONDEN;
 		} else {
 			try {
 				URL url  = new URL("http://speedskatingresults.com/api/xml/seed_times?skater=" + id + "&start=" + begindatum + "&end=" + einddatum + "&distance=" + afstand2);
@@ -78,12 +78,14 @@ public class PersoonMulti extends Persoon {
 	
 	public void berekenPunten(){
 		String tijd = getTijd();
-		if(tijd != Constants.GEENTIJD && tijd2 != Constants.GEENTIJD){
+		if(tijd != Constants.GEENTIJD && tijd2 != Constants.GEENTIJD && tijd != Constants.NIET_GEVONDEN){
 			honderdsten = Integer.parseInt(tijd.substring(0, 2))*60*100 + Integer.parseInt(tijd.substring(3,5))*100 + Integer.parseInt(tijd.substring(6,8));
 			honderdsten2 = Integer.parseInt(tijd2.substring(0, 2))*60*100 + Integer.parseInt(tijd2.substring(3,5))*100 + Integer.parseInt(tijd2.substring(6,8));
 			int afstand = getAfstand();
 			String puntenDuizendsten = Integer.toString((int)((((double)honderdsten / (double)afstand) * 500 + ((double)honderdsten2 / (double)afstand2) * 500) * 10));
 			setPunten(puntenDuizendsten);
+		} else if (tijd == Constants.NIET_GEVONDEN){
+			punten = Constants.NIET_GEVONDEN;
 		} else {
 			punten = Constants.GEENTIJD;
 		}
